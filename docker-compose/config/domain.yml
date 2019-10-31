@@ -1,5 +1,0 @@
-test:
-  domain: localhost
-
-development:
-  domain: "canvasweb"
