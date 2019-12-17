@@ -12,9 +12,31 @@ setup:
 # Note that config values in here are only available at Build time, not runtime. Use setup: section for runtime vars.
 build:
   docker:
-    web: Dockerfile
+# TODO: just verifying that a small docker manifest will come up by using an alternate Dockerfile.
+# If this works, move to using multi-stage builds to reduce the manifest size.
+#    web: Dockerfile
+    web: Dockerfile.production
   config:
     RAILS_ENV: production
     DOMAIN: stagingportal-bebraven-dot-org.herokuapp.com
+    JS_BUILD_NO_UGLIFY: 1
+
 run:
   web: bundle exec puma -C config/puma.rb
+  # Note: currently, the worker dyno must be at least standard-2x, which has 1GB of memory.
+  # Just loading the Rails app is like 900MB (which we need to optimize/reduce) so after the first
+  # deploy make sure and run: heroku ps:resize worker=standard-2x (or larger)
+  worker:
+    command:
+      # Use: DELAYED_JOB_WORKERS and DELAYED_JOB_WORKER_MAX_MEMORY
+      # environment variables to control the delayed_job worker's behavior. See config/delayed_job.rb
+      #
+      # Note: the command you run to start the dyno must continue running. It can't exit. So we
+      # can't daemonize the delayed_jobs worker like we do on AWS by calling start instead of run. 
+      # But run does it in the foreground and logs to stdout, so this works nicely with Heroku worker dynos.
+      # See this about how Heroku handles commands that exit:
+      # https://devcenter.heroku.com/articles/dynos#restarting
+      # See this class for details of start vs run:
+      # vendor/bundle/ruby/2.1.0/gems/inst-jobs-0.11.2/lib/delayed/cli.rb
+      - bundle exec script/canvas_init run
+    image: web

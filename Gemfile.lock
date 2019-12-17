@@ -287,9 +287,9 @@ PATH
   specs:
     i18n_extraction (0.0.1)
       activesupport (>= 3.2, < 4.3)
-      i18nliner (= 0.0.12)
-      ruby_parser (~> 3.7.0)
-      sexp_processor (~> 4.2)
+      i18nliner (= 0.0.14)
+      ruby_parser (~> 3.14.0)
+      sexp_processor (~> 4.9)
 
 PATH
   remote: gems/i18n_tasks
@@ -298,7 +298,7 @@ PATH
       activesupport (>= 3.2, < 4.3)
       i18n (~> 0.7.0)
       i18n_extraction
-      ruby_parser (~> 3.7.0)
+      ruby_parser (~> 3.14.0)
       utf8_cleaner
       ya2yaml (>= 0.30)
 
@@ -464,13 +464,9 @@ GEM
       thread_safe (~> 0.1)
       tzinfo (~> 0.3.37)
     addressable (2.3.8)
-    adobe_connect (1.0.3)
-      activesupport (>= 2.3.17)
-      nokogiri (>= 1.5.5, < 1.7)
-      rake (>= 0.9.2)
     after_transaction_commit (1.0.1)
       activerecord (>= 3.2)
-    airbrussh (1.3.2)
+    airbrussh (1.4.0)
       sshkit (>= 1.6.1, != 1.7.0)
     arel (4.0.2)
     aroi (0.0.3)
@@ -494,6 +490,7 @@ GEM
       nokogiri (>= 1.4.4)
     barby (0.5.0)
     bcrypt-ruby (3.0.1)
+    benchmark-ips (2.7.2)
     bindata (2.4.4)
     bluecloth (2.2.0)
     builder (3.1.4)
@@ -502,9 +499,6 @@ GEM
       redcarpet (>= 3.0.0)
       uniform_notifier (~> 1.9.0)
     byebug (9.0.6)
-    canvas_connect (0.3.10)
-      adobe_connect (~> 1.0.0)
-      rake (>= 0.9.6)
     canvas_statsd (1.0.3)
       aroi (= 0.0.3)
       statsd-ruby (= 1.0.0)
@@ -542,6 +536,14 @@ GEM
     crocodoc-ruby (0.0.1)
       json
     daemons (1.3.1)
+    derailed_benchmarks (1.3.5)
+      benchmark-ips (~> 2)
+      get_process_mem (~> 0)
+      heapy (~> 0)
+      memory_profiler (~> 0)
+      rack (>= 1)
+      rake (> 10, < 13)
+      thor (~> 0.19)
     diff-lcs (1.3)
     diplomat (0.15.0)
       faraday (~> 0.9)
@@ -559,6 +561,7 @@ GEM
     erubis (2.7.0)
     escape_code (0.2)
     eventmachine (1.0.4)
+    excon (0.69.1)
     execjs (1.4.0)
       multi_json (~> 1.0)
     extlib (0.9.16)
@@ -566,7 +569,6 @@ GEM
       multipart-post (>= 1.2, < 3)
     faraday_middleware (0.13.1)
       faraday (>= 0.7.4, < 1.0)
-    fast_stack (0.2.0)
     ffi (1.1.5)
     ffi-compiler (1.0.1)
       ffi (>= 1.0.0)
@@ -577,8 +579,7 @@ GEM
       ffi-rzmq-core (>= 1.0.7)
     ffi-rzmq-core (1.0.7)
       ffi
-    flamegraph (0.1.0)
-      fast_stack
+    flamegraph (0.9.5)
     folio-pagination (0.0.11)
     fontcustom (1.3.8)
       json (~> 1.4)
@@ -589,6 +590,8 @@ GEM
     gepub (0.6.9.2)
       nokogiri (~> 1.6.1)
       rubyzip (>= 1.1.1)
+    get_process_mem (0.2.5)
+      ffi (~> 1.0)
     github-markdown (0.6.8)
     globby (0.1.2)
     google-api-client (0.8.2)
@@ -611,17 +614,24 @@ GEM
       guard (>= 1.1)
     guard-shell (0.6.1)
       guard (>= 1.1.0)
-    hairtrigger (0.2.15)
+    hairtrigger (0.2.16)
       activerecord (>= 2.3)
       ruby2ruby (~> 2.0)
       ruby_parser (~> 3.5)
     hashdiff (0.2.0)
     hashery (1.3.0)
     headless (2.2.0)
+    heapy (0.1.3)
+    heroics (0.0.25)
+      erubis (~> 2.0)
+      excon
+      moneta
+      multi_json (>= 1.9.2)
     hey (1.3.0)
     highline (1.6.1)
     hoe (3.8.1)
       rake (>= 0.8, < 11.0)
+    http-accept (1.7.0)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
     httparty (0.13.7)
@@ -631,14 +641,14 @@ GEM
     i18nema (0.0.8)
       i18n (>= 0.5)
       syck (~> 1.0.0)
-    i18nliner (0.0.12)
+    i18nliner (0.0.14)
       activesupport (>= 3.0)
       erubis (~> 2.7.0)
       globby (>= 0.1.1)
       nokogiri (>= 1.5.0)
-      ruby2ruby (~> 2.0)
-      ruby_parser (~> 3.2)
-      sexp_processor (~> 4.4.0)
+      ruby2ruby (~> 2.4)
+      ruby_parser (~> 3.10)
+      sexp_processor (~> 4.10)
       ya2yaml (= 0.31)
     icalendar (1.5.4)
     iconv (1.0.4)
@@ -680,12 +690,14 @@ GEM
     marginalia (1.3.0)
       actionpack (>= 2.3)
       activerecord (>= 2.3)
+    memory_profiler (0.9.12)
     metaclass (0.0.2)
     method_source (0.9.2)
     mime-types (1.17.2)
     mini_magick (4.2.7)
     mini_portile (0.6.2)
     minitest (4.7.5)
+    moneta (1.0.0)
     moodle2cc (0.2.33)
       builder
       instructure-happymapper (~> 0.5.10)
@@ -716,9 +728,12 @@ GEM
       rspec (>= 2.14)
     open4 (1.3.0)
     parallel (1.4.1)
-    parser (2.6.3.0)
+    parser (2.6.5.0)
       ast (~> 2.4.0)
     pg (0.18.4)
+    platform-api (2.2.0)
+      heroics (~> 0.0.25)
+      moneta (~> 1.0.0)
     polyglot (0.3.5)
     posix-spawn (0.3.8)
     powerpack (0.1.2)
@@ -732,8 +747,8 @@ GEM
       posix-spawn (~> 0.3.6)
       yajl-ruby (~> 1.1.0)
     rack (1.5.4)
-    rack-mini-profiler (0.9.2)
-      rack (>= 1.1.3)
+    rack-mini-profiler (0.9.9.2)
+      rack (>= 1.2.0)
     rack-test (0.6.3)
       rack (>= 1.0)
     rails (4.0.13)
@@ -748,6 +763,11 @@ GEM
       activemodel (~> 4.0)
     rails-patch-json-encode (0.0.1)
       multi_json
+    rails_12factor (0.0.3)
+      rails_serve_static_assets
+      rails_stdout_logging
+    rails_serve_static_assets (0.0.5)
+    rails_stdout_logging (0.0.5)
     railties (4.0.13)
       actionpack (= 4.0.13)
       activesupport (= 4.0.13)
@@ -788,7 +808,8 @@ GEM
       redis (>= 3.0)
     request_store (1.4.1)
       rack (>= 1.4)
-    rest-client (2.0.2)
+    rest-client (2.1.0)
+      http-accept (>= 1.7.0, < 2.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
@@ -831,16 +852,16 @@ GEM
       activesupport (>= 3.0.0)
       i18n
       iso8601
-    ruby-openid (2.7.0)
+    ruby-openid (2.9.2)
     ruby-progressbar (1.7.5)
     ruby-saml-mod (0.3.1)
       ffi
       nokogiri (~> 1.6)
-    ruby2ruby (2.0.8)
+    ruby2ruby (2.4.4)
       ruby_parser (~> 3.1)
-      sexp_processor (~> 4.0)
-    ruby_parser (3.7.0)
-      sexp_processor (~> 4.1)
+      sexp_processor (~> 4.6)
+    ruby_parser (3.14.0)
+      sexp_processor (~> 4.9)
     rubycas-client (2.3.9)
       activesupport
     rubyzip (1.1.1)
@@ -852,6 +873,8 @@ GEM
       nokogiri-xmlsec-me-harder (~> 0.9, >= 0.9.3pre)
     sanitize (2.1.0)
       nokogiri (>= 1.4.4)
+    scout_apm (2.6.3)
+      parser
     scrypt (2.1.1)
       ffi-compiler (>= 0.0.2)
       rake
@@ -863,7 +886,7 @@ GEM
     sentry-raven (0.15.6)
       faraday (>= 0.7.6)
     sequel (4.5.0)
-    sexp_processor (4.4.5)
+    sexp_processor (4.13.0)
     shackles (1.1.0)
       activerecord (>= 4.0, < 5.1)
     shoulda-matchers (2.8.0)
@@ -897,10 +920,10 @@ GEM
       activesupport (>= 3.0)
       sprockets (>= 2.8, < 4.0)
     sqlite3 (1.3.9)
-    sshkit (1.19.1)
+    sshkit (1.20.0)
       net-scp (>= 1.1.2)
       net-ssh (>= 2.8.0)
-    stackprof (0.2.7)
+    stackprof (0.2.10)
     statsd-ruby (1.0.0)
     subexec (0.0.4)
     switchman (1.5.13)
@@ -969,7 +992,6 @@ DEPENDENCIES
   acts_as_list!
   addressable (= 2.3.8)
   adheres_to_policy!
-  adobe_connect (= 1.0.3)
   after_transaction_commit (= 1.0.1)
   attachment_fu!
   authlogic (= 3.4.6)
@@ -987,7 +1009,6 @@ DEPENDENCIES
   canvas_breach_mitigation!
   canvas_cassandra!
   canvas_color!
-  canvas_connect (= 0.3.10)
   canvas_crummy!
   canvas_ext!
   canvas_http!
@@ -1019,6 +1040,7 @@ DEPENDENCIES
   crack (= 0.4.3)
   crocodoc-ruby (= 0.0.1)
   csv_diff!
+  derailed_benchmarks (= 1.3.5)
   diigo!
   diplomat (= 0.15.0)
   docile (= 1.1.3)
@@ -1032,7 +1054,7 @@ DEPENDENCIES
   execjs (= 1.4.0)
   ffi (= 1.1.5)
   ffi-icu (= 0.1.10)
-  flamegraph (= 0.1.0)
+  flamegraph (= 0.9.5)
   folio-pagination (= 0.0.11)
   fontcustom (~> 1.3.3)
   foreigner (= 0.9.2)
@@ -1042,11 +1064,12 @@ DEPENDENCIES
   guard (= 1.8.0)
   guard-gulp (~> 0.0.2)
   guard-shell (~> 0.6.1)
-  hairtrigger (= 0.2.15)
+  hairtrigger (= 0.2.16)
   handlebars_tasks!
   hashdiff (= 0.2.0)
   hashery (= 1.3.0)
   headless (= 2.2.0)
+  heapy (= 0.1.3)
   hey (= 1.3.0)
   highline (= 1.6.1)
   hoe (= 3.8.1)
@@ -1056,7 +1079,7 @@ DEPENDENCIES
   i18n_extraction!
   i18n_tasks!
   i18nema (= 0.0.8)
-  i18nliner (= 0.0.12)
+  i18nliner (= 0.0.14)
   icalendar (= 1.5.4)
   iconv (= 1.0.4)
   ims-lti (= 2.1.0.beta.3)
@@ -1075,6 +1098,7 @@ DEPENDENCIES
   lti_outbound!
   mail (= 2.5.4)
   marginalia (= 1.3.0)
+  memory_profiler (= 0.9.12)
   metaclass (= 0.0.2)
   mime-types (= 1.17.2)
   mini_magick (= 4.2.7)
@@ -1095,6 +1119,7 @@ DEPENDENCIES
   paginated_collection!
   parallel (= 1.4.1)
   pg (= 0.18.4)
+  platform-api
   polyglot (= 0.3.5)
   posix-spawn (= 0.3.8)
   protected_attributes (= 1.0.8)
@@ -1102,10 +1127,11 @@ DEPENDENCIES
   pygments.rb (= 0.5.4)
   qti_exporter!
   rack (= 1.5.4)
-  rack-mini-profiler (= 0.9.2)
+  rack-mini-profiler (= 0.9.9.2)
   rails (= 4.0.13)
   rails-observers (= 0.1.2)
   rails-patch-json-encode (= 0.0.1)
+  rails_12factor
   rake (= 10.5.0)
   ratom-nokogiri (= 0.10.4)
   rb-fchange
@@ -1132,14 +1158,15 @@ DEPENDENCIES
   ruby-openid
   ruby-progressbar (= 1.7.5)
   ruby-saml-mod (= 0.3.1)
-  ruby2ruby (= 2.0.8)
-  ruby_parser (= 3.7.0)
+  ruby2ruby (= 2.4.4)
+  ruby_parser (= 3.14.0)
   rubycas-client (= 2.3.9)
   rubyzip (= 1.1.1)
   rufus-scheduler (= 3.1.2)
   safe_yaml (= 1.0.4)
   saml2 (= 1.0.7)
   sanitize (= 2.1.0)
+  scout_apm
   scrypt (= 2.1.1)
   selenium-webdriver (= 2.53.0)
   selinimum (= 0.0.1)!
@@ -1154,7 +1181,7 @@ DEPENDENCIES
   spring (= 1.2.0)
   spring-commands-rspec (= 1.0.2)
   sqlite3 (= 1.3.9)
-  stackprof (= 0.2.7)
+  stackprof (= 0.2.10)
   stringify_ids!
   subexec (= 0.0.4)
   switchman (= 1.5.13)

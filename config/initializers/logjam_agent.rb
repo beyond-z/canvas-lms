@@ -33,6 +33,7 @@ module LogjamAgent
   # Also, setting the level has no effect on console logging in development.
   # self.log_device_log_level = Logger::WARN   # log warnings, errors, fatals and unknown log messages
   # self.log_device_log_level = Logger::NONE   # log nothing at all
+  self.log_device_log_level =  Rails.logger.level
 
   # Configure lines which will not be logged locally.
   # They will still be sent to the logjam server. Defaults to nil.
@@ -74,7 +75,7 @@ module LogjamAgent
 
   # Patch the STDOUT Forwarder to send to Rails' logger instead, since stdout
   # seems to get lost somewhere.
-  class STDOUTForwarder
+ class STDOUTForwarder
     def forward(data, options={})
       msg = LogjamAgent.json_encode_payload(data)
       Rails.logger.info msg

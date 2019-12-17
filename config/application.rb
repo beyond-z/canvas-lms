@@ -18,6 +18,44 @@ require "rails/test_unit/railtie"
 
 Bundler.require(*Rails.groups)
 
+# Make the .env variables available before waiting for the
+# before_configuration hook to run so that we can get the database
+# environment variables setup properly before anything has to connect.
+# See: https://github.com/bkeepers/dotenv#note-on-load-order
+Dotenv::Railtie.load
+
+# This will take precendence over anything set in config/database.yml.
+# It's what Heroku uses to configure the database and we want to respect
+# that. 
+if ENV['DATABASE_URL']
+  begin
+    # Parse the database config environment variables out of the DATABASE_URL
+    # See config/database.yml for why we do this
+    # The format is: postgres://[user[:password]@][netloc][:port][/dbname][?param1=value1&...]
+    # E.g.           postgres://myuser:mypassword@mydbhost:myport/mydbname
+    puts "### Found a DATABASE_URL environment variable. Configuring the database connection with that instead of: PGDATABASE, PGUSER, PGPASSWORD, PGHOST"
+    database_uri = URI.parse(ENV["DATABASE_URL"])
+    ENV['PGDATABASE'] = "#{(database_uri.path || "").split("/")[1]}"
+    ENV['PGUSER'] = database_uri.user
+    ENV['PGPASSWORD'] = database_uri.password
+    ENV['PGHOST'] = database_uri.host
+    # Note: if you want to get fancier, here is a good example of parsing out other
+    # DB config stuff from the DATABASE_URL: https://gist.github.com/gullitmiranda/62082f2e47c364ef9617 
+    # If you decide to set the pool through this, do it in config/puma.rb and config/initializers/database_connection.rb
+
+    # Do NOT make the test database configurable so that we don't accidentally run tests against the real DB!
+    if ENV["RAILS_ENV"] == 'test'
+      ENV['PGDATABASE']='canvas_test'
+      database_uri.path = '/'+ENV['PGDATABASE']
+      ENV['DATABASE_URL']=database_uri.to_s # Somewhere deep in rails code, this value is used over PGDATABASE, so update that too.
+      puts "### Running tests. Overridding DATABASE_URL config. Using #{ENV['DATABASE_URL']} instead."
+    end
+
+  rescue URI::InvalidURIError
+    raise "Invalid DATABASE_URL=#{ENV["DATABASE_URL"]}. Fatal error."
+  end
+end
+
 if CANVAS_RAILS4_0
   ActiveRecord::Base.class_eval do
     mattr_accessor :dump_schema_after_migration, instance_writer: false
@@ -57,6 +95,7 @@ module CanvasRails
     log_config = File.exist?(log_config_path) && YAML.safe_load(ERB.new(File.read(log_config_path)).result)[Rails.env]
     log_config = { 'logger' => 'rails', 'log_level' => 'debug' }.merge(log_config || {})
     opts = {}
+
     require 'canvas_logger'
 
     config.log_level = log_config['log_level']
@@ -77,7 +116,16 @@ module CanvasRails
         opts[:include_pid] = true if log_config["include_pid"] == true
         config.logger = SyslogWrapper.new(ident, facilities, opts)
         config.logger.level = log_level
-      else
+     when "stdout"
+        # Note: the rails12factor gem is supposed to configure this automatically, with the
+        # rails_stdout_logging gem. But something, somewhere still seems to set it up to write 
+        # to the actual log file so we're explicitly initializing it here.
+        # Note: this is confusing b/c we're using Rails4, but if you look at the src code,
+        # 3 and 4 use the same initializer
+        require 'rails_stdout_logging/rails3'
+        RailsStdoutLogging::Rails3.set_logger(config)
+        Rails.logger.info "### Rails.logger is configured to log to STDOUT."
+     else
         log_path = config.paths['log'].first
 
         if ENV['RUNNING_AS_DAEMON'] == 'true'
@@ -206,6 +254,13 @@ module CanvasRails
     ActiveSupport::XmlMini.backend = 'Nokogiri'
 
     class NotImplemented < StandardError; end
+
+    if ENV['SCOUT_KEY']
+      require 'scout_apm'
+      # This needs to be run after all the other stuff we want to instrument is required.
+      # Experiment with moving it to an earlier point if we want more info on boot/startup though
+      ScoutApm::Rack.install!
+    end
 
     if defined?(PhusionPassenger)
       PhusionPassenger.on_event(:starting_worker_process) do |forked|
