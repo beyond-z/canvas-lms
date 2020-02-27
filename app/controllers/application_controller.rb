@@ -2432,8 +2432,14 @@ class ApplicationController < ActionController::Base
         'response' => {
           'code' => response.code,
         },
-        'user' => @current_user,
       }
+
+      unless @current_user.nil?
+        data['user'] = {
+          'id' => @current_user.id,
+          'name' => @current_user.name,
+        }
+      end
     rescue Exception => error
       data['error_msg'] = "Error from extra_logging: #{error.to_s}"
     end
