@@ -92,10 +92,10 @@ window.addEventListener("beforeunload", function(event) {
 
 function bzRetainedInfoSetup(readonly) {
   function lockRelatedCheckboxes(el) {
-    // or if we are a graded checkbox, disable other graded checkboxes inside the same bz-box since they are all related
+    // or if we are a graded checkbox, disable other graded checkboxes inside the same bz-box/content-section since they are all related
     if(el.getAttribute("type") == "checkbox") {
       var p = el;
-      while(p && !p.classList.contains("bz-box"))
+      while(p && !p.classList.contains("bz-box") && !p.classList.contains("content-section"))
         p = p.parentNode;
       if(p) {
         var otherBoxes = p.querySelectorAll("[data-bz-retained][type=checkbox][data-bz-answer]");
@@ -283,10 +283,10 @@ function bzRetainedInfoSetup(readonly) {
         if(el.hasAttribute("data-bz-answer")) {
           // it is a mastery answer, don't actually save until the next button is pressed (if present)
           var p = el;
-          while(p && !p.classList.contains("bz-box"))
+          while(p && !p.classList.contains("bz-box") && !p.classList.contains("content-section"))
             p = p.parentNode;
           if(p) {
-            var btn = p.querySelector(".bz-toggle-all-next");
+            var btn = p.querySelector(".bz-toggle-all-next,.done-button");
             var wrapper = function() {
 	      delayedMagicFieldSaves -= 1;
               actualSave();
