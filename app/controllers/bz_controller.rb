@@ -14,9 +14,9 @@ class BzController < ApplicationController
   # magic field dump / for cohorts uses an access token instead
   # and courses_for_email is unauthenticated since it isn't really sensitive
   # user_retained_data_batch is sensitive, but it can also be done via access_token
-  before_filter :require_user, :except => [:magic_field_dump, :courses_for_email, :magic_fields_for_cohort, :course_cohort_information, :user_retained_data_batch, :prepare_qualtrics_links]
+  before_filter :require_user, :except => [:magic_field_dump, :courses_for_email, :magic_fields_for_cohort, :course_cohort_information, :user_retained_data_batch, :user_retained_data, :set_user_retained_data, :prepare_qualtrics_links]
+  before_filter :require_user_render_json_unauthorized, :only => [:user_retained_data, :set_user_retained_data]
   skip_before_filter :verify_authenticity_token, :only => [:last_user_url, :set_user_retained_data, :delete_user, :user_retained_data_batch, :prepare_qualtrics_links]
-
 
   # used by the pdf annotator
   def submission_comment

@@ -115,7 +115,6 @@ module AuthenticationMethods
 
   def load_user
     @current_user = @current_pseudonym = nil
-
     masked_authenticity_token # ensure that the cookie is set
 
     load_pseudonym_from_jwt
@@ -246,6 +245,31 @@ module AuthenticationMethods
   end
   protected :require_user
 
+  def require_user_render_json_unauthorized
+    if @current_user && @current_pseudonym
+      true
+    else
+      render :json => {
+               :status => I18n.t('lib.auth.status_unauthenticated', 'unauthenticated'),
+               :errors => [ { :message => I18n.t('lib.auth.authentication_required', "user authentication required") } ],
+               :login_url => effective_cas_login_url 
+             },
+             :status => :unauthorized
+    end
+  end
+  protected :require_user_render_json_unauthorized
+
+  def effective_cas_login_url
+    #... so if SSO is set, we can send them there directly, instead of through
+    # two other Canvas middleman pages, shaving a noticiable amount of time off
+    # for the user to experience
+    if @domain_root_account.auth_discovery_url
+      @domain_root_account.auth_discovery_url
+    else
+      delegated_auth_redirect_uri(url_for({ controller: 'login/cas', action: :new }.merge(params.slice(:id))))
+    end
+  end
+
   def clean_return_to(url)
     return nil if url.blank?
     begin
@@ -310,14 +334,7 @@ module AuthenticationMethods
           redirect_to login_url(params.slice(:canvas_login, :authentication_provider))
           return
         else
-          #... so if SSO is set, we can send them there directly, instead of through
-          # two other Canvas middleman pages, shaving a noticiable amount of time off
-          # for the user to experience
-          if @domain_root_account.auth_discovery_url
-            redirect_to @domain_root_account.auth_discovery_url
-          else
-            redirect_to delegated_auth_redirect_uri(url_for({ controller: 'login/cas', action: :new }.merge(params.slice(:id))))
-          end
+          redirect_to effective_cas_login_url
           return
         end
       }

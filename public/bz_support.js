@@ -124,7 +124,7 @@ function bzRetainedInfoSetup(readonly) {
       element.checked = (value == element.value) ? true : false;
     } else if(element.tagName == "INPUT" && element.getAttribute("type") == "button"){
       if (value == "clicked"){
-       element.className += " bz-was-clicked";
+        element.classList.add("bz-was-clicked");
       }
     } else if(element.tagName == "INPUT" || element.tagName == "TEXTAREA"){
       element.value = value;
@@ -746,6 +746,26 @@ function BZ_SaveMagicField(field_name, field_value, optional, type, answer, weig
             BZ_SaveMagicField(field_name, field_value, optional, type, answer);
           }, 5000);
           BZ_MagicFieldSaveTimeouts[field_name] = timeout;
+        } else if(http.status == 401) {
+          // Their session isn' valid and they're logged out. Flash a message and redirect 
+          // to login. This will come up as soon as they try to edit a field while logged 
+          // out and a prompt that their work hasn't saved (in addition to the message about 
+          // why) will ask if they want to leave. They can hit cancel to go save that field 
+          // in a notepad or something if they don't want to lose it.
+          var loggedOutWarning = document.getElementById("bz-logged-out-warning");
+          if(loggedOutWarning) {
+            loggedOutWarning.style.display = "";
+          }
+          var err = JSON.parse(http.responseText);
+          var redirectURL = err["login_url"];
+          // Give it a sec for them to see the message and then redirect them to login.
+          var timeout = setTimeout(function() {
+            if(redirectURL) {
+              window.location.href = redirectURL;
+            } else {
+              window.location.href = window.location.protocol + "//" + window.location.host + "/login";
+            }
+          }, 1500);
         } else {
           // returned error from Canvas...
           // should be a code error on our side
