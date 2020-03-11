@@ -113,7 +113,7 @@ class BZGrading
     context_module = get_context_module(module_item_id)
 
     names = {}
-    selector = 'input[data-bz-retained]:not(.bz-optional-magic-field),textarea[data-bz-retained]:not(.bz-optional-magic-field)'
+    selector = 'input[data-bz-retained]:not(.bz-optional-magic-field):not([data-bz-optional-magic-field="true"]),textarea[data-bz-retained]:not(.bz-optional-magic-field):not([data-bz-optional-magic-field="true"])'
 
     # Loop over the Wiki Pages in this module
     items_in_module = context_module.content_tags.active
