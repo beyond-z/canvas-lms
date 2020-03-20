@@ -90,6 +90,14 @@ window.addEventListener("beforeunload", function(event) {
   }
 });
 
+function bzIsOptionalMagicField(el) {
+  if (el.classList.contains("bz-optional-magic-field") || el.getAttribute("data-bz-optional-magic-field") == "true") {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 function bzRetainedInfoSetup(readonly) {
   function lockRelatedCheckboxes(el) {
     // or if we are a graded checkbox, disable other graded checkboxes inside the same bz-box/content-section since they are all related
@@ -199,7 +207,7 @@ function bzRetainedInfoSetup(readonly) {
           el.className += " bz-was-clicked";
         }
         var optional = false;
-        if (el.classList.contains("bz-optional-magic-field"))
+        if (bzIsOptionalMagicField(el))
           optional = true;
 
         var actualSaveInternal = function() {
@@ -435,7 +443,7 @@ function validateMagicFields() {
 
   var list = document.querySelectorAll("#assignment_show .description input[type=text][data-bz-retained], #assignment_show .description input[type=url][data-bz-retained], #assignment_show .description textarea[data-bz-retained]");
   for(var a = 0; a < list.length; a++) {
-    if(list[a].value == "" && !list[a].classList.contains("bz-optional-magic-field")) {
+    if(list[a].value == "" && !bzIsOptionalMagicField(list[a])) {
       if(firstValidateMagicFieldsTest == null || firstValidateMagicFieldsTest != list[a]) {
         firstValidateMagicFieldsTest = list[a];
         alert('You have incomplete fields in this project. Go back and complete them before submitting.');
@@ -541,7 +549,7 @@ function bzActivateInstantSurvey(magic_field_name) {
 	var inputs = i.querySelectorAll("input");
 	for(var a = 0; a < inputs.length; a++) {
 		inputs[a].onchange = function() {
-			save(this.value, this.classList.contains("bz-optional-magic-field"));
+			save(this.value, bzIsOptionalMagicField(this));
 		};
 	}
 }
