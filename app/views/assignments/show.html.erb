@@ -249,5 +249,9 @@
 
 <%= render :partial => 'bz/browser_warning' %>
 <script>
+  <% if @assignment.new_html? %>
+    window.BRAVEN_NEW_HTML = true;
+  <% end %>
+
   bzRetainedInfoSetup();
 </script>

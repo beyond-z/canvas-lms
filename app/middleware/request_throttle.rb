@@ -49,6 +49,7 @@ class RequestThrottle
 
     status, headers, response = nil
     throttled = false
+
     bucket = LeakyBucket.new(client_identifier(request))
 
     cost = bucket.reserve_capacity do
@@ -162,6 +163,12 @@ class RequestThrottle
     @whitelist = @blacklist = nil
   end
 
+  # There is a bug with running LeakyBucket.lua.run(...) below in our production environment which is
+  # cloud based so we don't have access to the detailed redis config to try and workaround. 
+  # It leads to this error: OOM command not allowed when used memory > 'maxmemory'.
+  # For the time being we've disabled it using the setting below. This is fine since we don't expose 
+  # the API to anyone and don't have to worry about request throttling.
+  # See: https://github.com/antirez/redis/issues/6565
   def self.enabled?
     Setting.get("request_throttle.skip", "false") != 'true'
   end
@@ -275,7 +282,7 @@ class RequestThrottle
     # round trips, and possibly more when we get a transaction conflict.
     # amount and reserve_cost are passed separately for logging purposes.
     def increment(amount, reserve_cost = 0, current_time = Time.now)
-      if client_identifier.blank? || !Canvas.redis_enabled?
+      if client_identifier.blank? || !Canvas.redis_enabled? || Setting.get("request_throttle.skip", "false") == "true"
         return
       end
 

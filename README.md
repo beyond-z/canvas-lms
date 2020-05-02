@@ -1,3 +1,7 @@
+🛑 THIS HAS BEEN ARCHIVED. The active repostiory has been forked [here](https://github.com/bebraven/canvas-lms) 🛑
+======
+
+
 Beyond Z Canvas LMS
 ======
 

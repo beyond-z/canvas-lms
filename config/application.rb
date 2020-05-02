@@ -124,7 +124,6 @@ module CanvasRails
         # 3 and 4 use the same initializer
         require 'rails_stdout_logging/rails3'
         RailsStdoutLogging::Rails3.set_logger(config)
-        Rails.logger.info "### Rails.logger is configured to log to STDOUT."
      else
         log_path = config.paths['log'].first
 
@@ -255,7 +254,7 @@ module CanvasRails
 
     class NotImplemented < StandardError; end
 
-    if ENV['SCOUT_KEY']
+    if ENV['SCOUT_KEY'] && ENV['SCOUT_MONITOR'] != 'false'
       require 'scout_apm'
       # This needs to be run after all the other stuff we want to instrument is required.
       # Experiment with moving it to an earlier point if we want more info on boot/startup though

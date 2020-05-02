@@ -90,12 +90,20 @@ window.addEventListener("beforeunload", function(event) {
   }
 });
 
+function bzIsOptionalMagicField(el) {
+  if (el.classList.contains("bz-optional-magic-field") || el.getAttribute("data-bz-optional-magic-field") == "true") {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 function bzRetainedInfoSetup(readonly) {
   function lockRelatedCheckboxes(el) {
-    // or if we are a graded checkbox, disable other graded checkboxes inside the same bz-box since they are all related
+    // or if we are a graded checkbox, disable other graded checkboxes inside the same bz-box/content-section since they are all related
     if(el.getAttribute("type") == "checkbox") {
       var p = el;
-      while(p && !p.classList.contains("bz-box"))
+      while(p && !p.classList.contains("bz-box") && !p.classList.contains("content-section"))
         p = p.parentNode;
       if(p) {
         var otherBoxes = p.querySelectorAll("[data-bz-retained][type=checkbox][data-bz-answer]");
@@ -124,7 +132,7 @@ function bzRetainedInfoSetup(readonly) {
       element.checked = (value == element.value) ? true : false;
     } else if(element.tagName == "INPUT" && element.getAttribute("type") == "button"){
       if (value == "clicked"){
-       element.className += " bz-was-clicked";
+        element.classList.add("bz-was-clicked");
       }
     } else if(element.tagName == "INPUT" || element.tagName == "TEXTAREA"){
       element.value = value;
@@ -199,7 +207,7 @@ function bzRetainedInfoSetup(readonly) {
           el.className += " bz-was-clicked";
         }
         var optional = false;
-        if (el.classList.contains("bz-optional-magic-field"))
+        if (bzIsOptionalMagicField(el))
           optional = true;
 
         var actualSaveInternal = function() {
@@ -283,10 +291,10 @@ function bzRetainedInfoSetup(readonly) {
         if(el.hasAttribute("data-bz-answer")) {
           // it is a mastery answer, don't actually save until the next button is pressed (if present)
           var p = el;
-          while(p && !p.classList.contains("bz-box"))
+          while(p && !p.classList.contains("bz-box") && !p.classList.contains("content-section"))
             p = p.parentNode;
           if(p) {
-            var btn = p.querySelector(".bz-toggle-all-next");
+            var btn = p.querySelector(".bz-toggle-all-next,.done-button");
             var wrapper = function() {
 	      delayedMagicFieldSaves -= 1;
               actualSave();
@@ -435,7 +443,7 @@ function validateMagicFields() {
 
   var list = document.querySelectorAll("#assignment_show .description input[type=text][data-bz-retained], #assignment_show .description input[type=url][data-bz-retained], #assignment_show .description textarea[data-bz-retained]");
   for(var a = 0; a < list.length; a++) {
-    if(list[a].value == "" && !list[a].classList.contains("bz-optional-magic-field")) {
+    if(list[a].value == "" && !bzIsOptionalMagicField(list[a])) {
       if(firstValidateMagicFieldsTest == null || firstValidateMagicFieldsTest != list[a]) {
         firstValidateMagicFieldsTest = list[a];
         alert('You have incomplete fields in this project. Go back and complete them before submitting.');
@@ -541,7 +549,7 @@ function bzActivateInstantSurvey(magic_field_name) {
 	var inputs = i.querySelectorAll("input");
 	for(var a = 0; a < inputs.length; a++) {
 		inputs[a].onchange = function() {
-			save(this.value, this.classList.contains("bz-optional-magic-field"));
+			save(this.value, bzIsOptionalMagicField(this));
 		};
 	}
 }
@@ -746,6 +754,26 @@ function BZ_SaveMagicField(field_name, field_value, optional, type, answer, weig
             BZ_SaveMagicField(field_name, field_value, optional, type, answer);
           }, 5000);
           BZ_MagicFieldSaveTimeouts[field_name] = timeout;
+        } else if(http.status == 401) {
+          // Their session isn' valid and they're logged out. Flash a message and redirect 
+          // to login. This will come up as soon as they try to edit a field while logged 
+          // out and a prompt that their work hasn't saved (in addition to the message about 
+          // why) will ask if they want to leave. They can hit cancel to go save that field 
+          // in a notepad or something if they don't want to lose it.
+          var loggedOutWarning = document.getElementById("bz-logged-out-warning");
+          if(loggedOutWarning) {
+            loggedOutWarning.style.display = "";
+          }
+          var err = JSON.parse(http.responseText);
+          var redirectURL = err["login_url"];
+          // Give it a sec for them to see the message and then redirect them to login.
+          var timeout = setTimeout(function() {
+            if(redirectURL) {
+              window.location.href = redirectURL;
+            } else {
+              window.location.href = window.location.protocol + "//" + window.location.host + "/login";
+            }
+          }, 1500);
         } else {
           // returned error from Canvas...
           // should be a code error on our side

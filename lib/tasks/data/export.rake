@@ -6,9 +6,14 @@ namespace :data do
 
       admin = User.find 1
       scores_model_by_id = {
-        71 => Course71ProjectScore,
-        73 => Course73ProjectScore,
-        81 => Course81ProjectScore
+#        71 => Course71ProjectScore, # Fall 2019 - SJSU
+#        73 => Course73ProjectScore, # Fall 2019 - RUN
+#        81 => Course81ProjectScore, # Fall 2019 - BravenX
+        87 => Course87ProjectScore,  # Spring 2020 - NLU Q1
+        86 => Course86ProjectScore,  # Spring 2020 - NLU Q2
+        89 => Course89ProjectScore,  # Spring 2020 - RUN
+        90 => Course90ProjectScore,  # Spring 2020 - SJSU
+        91 => Course91ProjectScore   # Spring 2020 - Lehman
       }
       course_id = args[:course_id].to_i
       klass = scores_model_by_id[course_id]
@@ -40,7 +45,7 @@ namespace :data do
             header_colname_stripped = parsed_colname.downcase.gsub(/[^0-9a-z]/, '')
             klass_colname_stripped = klass.column_names[i].downcase.gsub(/[^0-9a-z]/, '')
             unless klass_colname_stripped.start_with? header_colname_stripped[0..klass_colname_stripped.length-1]
-              err_msg = "The Export::GradeDownload.csv headers no longer match the #{klass.name} columns. Mismatch for: #{parsed_colname} column"
+              err_msg = "The Export::GradeDownload.csv headers no longer match the #{klass.name} columns. Mismatch for: database column = #{klass.column_names[i]}, column in .csv export = #{parsed_colname}"
               raise RuntimeError.new(err_msg)
             end
           end

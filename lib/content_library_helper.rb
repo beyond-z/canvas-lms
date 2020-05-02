@@ -67,4 +67,14 @@ module ContentLibraryHelper
     doc.to_html
   end
 
+  def new_html?
+    newHTMLFlag = '<!-- BRAVEN_NEW_HTML -->'
+    if defined? body and body
+      # wiki_page
+      body.include? newHTMLFlag
+    elsif defined? description and description
+      # assignment
+      description.include? newHTMLFlag
+    end
+  end
 end
